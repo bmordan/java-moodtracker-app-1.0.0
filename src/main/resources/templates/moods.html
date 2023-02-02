@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Mood Tracker</title>
+    <style>
+        form div {
+            display: flex;
+        }
+        form div input {
+            flex-grow: 1;
+        }
+        form div button {
+            margin-left: 2rem;
+            background-color: hotpink;
+            color: white;
+            border: 0px solid transparent;
+            border-radius: .25rem;
+        }
+        form div span, form div button {
+            font-size: 4rem;
+        }
+        .logout {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Moods for <span th:text="${user.get('name')}"></span></h1>
+    <a class="logout" th:href="@{/logout}">
+        <button>Log Out</button>
+    </a>
+    <canvas id="moodChart"></canvas>
+    <form action="#" th:action="@{/moods}" th:object="${mood}" method="post">
+        <input id="ts" name="ts" type="hidden" />
+        <input id="userId" name="userId" type="hidden" th:value="${user.get('sub')}" />
+        <h2>How are you feeling?</h2>
+        <div>
+            <span>🙁</span>
+            <input name="score" type="range" value="5" min="1" max="11" step="1"/>
+            <span>😄</span>
+            <button>Save</button>
+        </div>
+    </form>
+
+    <script type="text/javascript" th:inline="javascript">
+        const data = /*[[${moods}]]*/ null;
+    </script>
+    <script>
+        document.getElementById('ts').value = new Date().toISOString()
+        const ctx = document.getElementById('moodChart')
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'moods',
+                    data: data.map(({score, ts}) => ({x: ts, y: score})),
+                    borderColor: 'hotpink',
+                    tension: 0.5
+                }]
+            }
+        })
+    </script>
+</body>
+</html>
