@@ -1,0 +1,17 @@
+version: "3"
+services:
+  jenkins:
+    container_name: my-jenkins
+    image: bmordan/jenkins-with-docker
+    privileged: true
+    user: root
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - /Users/bernardmordan/Desktop/jenkins-data/jenkins_compose/jenkins_configuration:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - jenkins
+networks:
+  jenkins:
