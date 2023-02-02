@@ -26,6 +26,11 @@ pipeline {
         stage("Deploy") {
             steps {
                 sh 'ls -l build/libs/*.jar'
+                sshagent(credentials: ["AWS-DOCKER-COMPOSE"]) {
+                    sh "ssh -o StrictHostKeyChecking=no ec2-user@13.40.108.122 'docker --version'"
+                    sh "ssh -o StrictHostKeyChecking=no ec2-user@13.40.108.122 'docker-compose --version'"
+                    sh "export"
+                }
             }
         }
     }
