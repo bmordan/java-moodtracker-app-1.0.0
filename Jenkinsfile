@@ -20,6 +20,12 @@ pipeline {
         stage("Test") {
             steps {
                 sh 'gradle clean test'
+                sh 'gradle bootJar'
+            }
+        }
+        stage("Deploy") {
+            steps {
+                sh 'ls -l build/libs/*.jar'
             }
         }
     }
