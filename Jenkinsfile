@@ -1,39 +1,41 @@
 pipeline {
-    agent {
-        docker {
-            image 'gradle:7.6.0-jdk17'
-        }
-    }
+    agent none
     environment {
         MOD2_AUTH0_CLIENT_ID = credentials("MOD2_AUTH0_CLIENT_ID")
         MOD2_AUTH0_CLIENT_SECRET = credentials("MOD2_AUTH0_CLIENT_SECRET")
         MOD2_AUTH0_ISSUER = credentials("MOD2_AUTH0_ISSUER")
     }
     stages {
-        stage("hello-github") {
-            steps {
-                git credentialsId: 'github', url: 'https://github.com/MultiverseLearningProducts/java-moodtracker-app'
-                sh 'java --version'
-                sh 'gradle --version'
-            }
-        }
         stage("Test") {
+            agent {
+                docker {
+                    image 'gradle:7.6.0-jdk17'
+                }
+            }
             steps {
                 sh 'gradle clean test'
                 sh 'gradle bootJar'
+                sh 'ls -l'
+                stash includes: 'Dockerfile', name: 'Dockerfile'
+                stash includes: 'build/libs/*.jar', name: 'jarfile'
             }
         }
         stage("Dockerize") {
-            steps {
-                script {
-                    image = docker.build('bmordan/moodtracker')
-                    docker.withRegistry('https://hub.docker.com/bmordan', credentialsId: 'DOCKER_CREDENTIALS') {
-                        image.push()
-                    }
+            agent {
+                docker {
+                    image 'docker:dind'
                 }
+            }
+            steps {
+                unstash 'Dockerfile'
+                unstash 'jarfile'
+                sh 'ls -l'
+                sh 'docker build -t bmordan/moodtracker .'
+                sh 'docker push bmordan/moodtracker'
             }
         }
         stage("Deploy") {
+            agent any
             steps {
                 sh 'ls -l build/libs/*.jar'
                 sshagent(credentials: ["AWS-DOCKER-COMPOSE"]) {
