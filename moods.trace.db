@@ -2575,3 +2575,6 @@ create table mood (id integer not null, score integer, ts timestamp, user_id var
 2023-02-02 11:22:21 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "mood" already exists; SQL statement:
 create table mood (id integer not null, score integer, ts timestamp, user_id varchar(255), primary key (id)) [42101-214]
+2023-02-10 13:35:40 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "mood" already exists; SQL statement:
+create table mood (id integer not null, score integer, ts timestamp, user_id varchar(255), primary key (id)) [42101-214]
