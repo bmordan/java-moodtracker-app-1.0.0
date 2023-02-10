@@ -24,9 +24,11 @@ pipeline {
                 }
             }
             steps {
-                image = docker.build('bmordan/moodtracker')
-                docker.withRegistry('https://hub.docker.com/bmordan', credentialsId: 'DOCKER_CREDENTIALS') {
-                    image.push()
+                script {
+                    image = docker.build('bmordan/moodtracker')
+                    docker.withRegistry('https://hub.docker.com/bmordan', credentialsId: 'DOCKER_CREDENTIALS') {
+                        image.push()
+                    }
                 }
             }
         }
