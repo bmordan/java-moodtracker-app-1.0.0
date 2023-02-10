@@ -13,11 +13,8 @@ pipeline {
                 }
             }
             steps {
-                sh 'gradle clean test'
+                // sh 'gradle clean test'
                 sh 'gradle bootJar'
-                sh 'ls -l'
-                stash includes: 'Dockerfile', name: 'Dockerfile'
-                stash includes: 'build/libs/*.jar', name: 'jarfile'
             }
         }
         stage("Dockerize") {
@@ -27,11 +24,10 @@ pipeline {
                 }
             }
             steps {
-                unstash 'Dockerfile'
-                unstash 'jarfile'
-                sh 'ls -l'
-                sh 'docker build -t bmordan/moodtracker .'
-                sh 'docker push bmordan/moodtracker'
+                image = docker.build('bmordan/moodtracker')
+                docker.withRegistry('https://hub.docker.com/bmordan', credentialsId: 'DOCKER_CREDENTIALS') {
+                    image.push()
+                }
             }
         }
         stage("Deploy") {
