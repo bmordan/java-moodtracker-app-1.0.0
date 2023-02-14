@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     image = docker.build('bmordan/moodtracker')
-                    docker.withRegistry('https://hub.docker.com/bmordan', credentialsId: 'DOCKER_CREDENTIALS') {
+                    docker.withDockerRegistry([credentialsId: 'DOCKER_CREDENTIALS', url: ""]) {
                         image.push()
                     }
                 }

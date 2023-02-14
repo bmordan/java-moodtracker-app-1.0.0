@@ -57,6 +57,11 @@ pipeline {
 Pipeline: Declarative
 Docker Pipeline
 Gradle
+Docker API Plugin
+Docker Commons Plugin
+Docker Pipeline
+Docker Plugin
+docker-build-step
 
 Add docker to cloud in manage jenkins and set the docker host uri on Mac that is:
 
