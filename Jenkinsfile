@@ -4,6 +4,7 @@ pipeline {
         MOD2_AUTH0_CLIENT_ID = credentials("MOD2_AUTH0_CLIENT_ID")
         MOD2_AUTH0_CLIENT_SECRET = credentials("MOD2_AUTH0_CLIENT_SECRET")
         MOD2_AUTH0_ISSUER = credentials("MOD2_AUTH0_ISSUER")
+        DOCKER = credentials("DOCKER_CREDENTIALS")
     }
     stages {
         stage("Test") {
@@ -26,9 +27,8 @@ pipeline {
             steps {
                 script {
                     image = docker.build('bmordan/moodtracker')
-                    docker.withDockerRegistry([credentialsId: 'DOCKER_CREDENTIALS', url: ""]) {
-                        image.push()
-                    }
+                    sh 'echo $DOCKER_PSW | docker login -u $DOCKER_USR --password-stdin'
+                    sh 'docker push bmordan/moodtracker'
                 }
             }
         }
@@ -43,6 +43,11 @@ pipeline {
                     sh "ssh -o StrictHostKeyChecking=no ec2-user@13.42.55.28 'docker run -e MOD2_AUTH0_CLIENT_ID=${MOD2_AUTH0_CLIENT_ID} -e MOD2_AUTH0_CLIENT_SECRET=${MOD2_AUTH0_CLIENT_SECRET} -e MOD2_AUTH0_ISSUER=${MOD2_AUTH0_ISSUER} -name=moodtracker -p 8080:8080 -d bmordan/moodtracker'"
                 }
             }
+        }
+    }
+    post {
+        always {
+            sh 'docker logout'
         }
     }
 }
